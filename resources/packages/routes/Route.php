@@ -2,6 +2,7 @@
 namespace App\resources\packages\routes;
 
 use App\resources\packages\routes\RouteRegister;
+use App\resources\packages\routes\Router;
 
 class Route {
 
@@ -21,6 +22,10 @@ class Route {
 
     public static function __callStatic(String $name, Array $arguments) {
         return self::selfInstance()->registerRoutes($name, $arguments);
+    }
+
+    public static function routeRun(Router $router) {
+        var_dump('hello');
     }
 
     private static function selfInstance() {
@@ -88,9 +93,5 @@ class Route {
         $lastElement = end($this->{'_' . $currentRoute . '_routes'});
         $lastElement['name'] = $name;
         array_push($this->_named_routes, $lastElement);
-    }
-
-    public function getArray() {
-        var_dump($this->current_route);
     }
 }

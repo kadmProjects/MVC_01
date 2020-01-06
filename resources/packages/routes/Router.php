@@ -52,7 +52,7 @@ class Router extends Route {
     public function run() {
         $requestMethod =  $this->request->method();
 
-        $this->getArray();
+        //$this->getArray();
     }
 
     private function isValidRoute($url) {
