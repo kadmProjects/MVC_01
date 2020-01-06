@@ -1,12 +1,16 @@
 <?php
 namespace App\resources\packages\routes;
 
-class Router extends Route {
-    public function __construct() {
+use App\resources\packages\http\Request;
 
+class Router extends Route {
+    private $request;
+
+    public function __construct(Request $request) {
+        $this->request = $request;
     }
 
-    public static function content($url, $action) {
+    private function content($url, $action) {
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             // if ($_SERVER['REQUEST_URI']) {
                 Route::addToGetCollection($url);
@@ -42,6 +46,21 @@ class Router extends Route {
         } else {
             var_dump("You cannot use this method for your REQUEST. Your REQUEST is a " . $_SERVER["REQUEST_METHOD"] . ' REQUEST. Please use a suitable REQUEST method.');
             //return;
+        }
+    }
+
+    public function run() {
+        $requestMethod =  $this->request->method();
+
+        $this->getArray();
+    }
+
+    private function isValidRoute($url) {
+        $inArray = array_search(filter_var($url, FILTER_SANITIZE_URL), self::$getRoutesList);
+        if ($inArray !== false) {
+            return true;
+        } else {
+            return false;
         }
     }
 }

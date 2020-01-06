@@ -22,11 +22,9 @@ function autoload($classname, $dir = null) {
                 if (file_exists($dir . $filename)) {
                     require_once $dir . $filename;
                 } else {
-                    var_dump("File " . $dir . $filename . " not exists");
+                    var_dump("File " . $dir . $filename . "does not exists");
                 }
             }
         }
     }
 }
-
-require_once '../config/routes.php';

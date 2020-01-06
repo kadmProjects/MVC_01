@@ -6,13 +6,14 @@ use App\resources\packages\routes\RouteRegister;
 class Route {
 
     private static $_instance;
-    private $currentRoute;
+    private $current_route;
     protected $_get_routes = [];
     protected $_post_routes = [];
     protected $_put_routes = [];
     protected $_patch_routes = [];
     protected $_delete_routes = [];
-    private $allowedRoutes = [
+    protected $_named_routes = [];
+    private $allowed_routes = [
         'get', 'post', 'put', 'patch', 'delete'
     ];
 
@@ -32,7 +33,7 @@ class Route {
 
     private function registerRoutes(String $name, Array $arguments) {
         $name = strtolower($name);
-        if (in_array($name, $this->allowedRoutes)) {
+        if (in_array($name, $this->allowed_routes)) {
             return $this->register($name, $arguments);
         } else {
             //TO DO
@@ -71,26 +72,25 @@ class Route {
     }
 
     private function registerEachRoute(RouteRegister $routeRegister, String $name, String $route, Array $endPoint) {
-        $this->currentRoute = $name;
-        $routeRegister->{$name}($route, $endPoint);
+        $routeDataArray = $routeRegister->{$name}($route, $endPoint);
+        $this->current_route = $name;
+        $this->addToRouteList($name, $routeDataArray);
+
         return $this;
     }
 
-    protected function getAllRoutes($method) {
-        //return $this->_{$method} _routes;
+    private function addToRouteList(String $name, Array $routeData) {
+        array_push($this->{'_' . $name . '_routes'}, $routeData);
     }
 
     public function name($name) {
-        //var_dump($this->currentRoute);
+        $currentRoute = $this->current_route;
+        $lastElement = end($this->{'_' . $currentRoute . '_routes'});
+        $lastElement['name'] = $name;
+        array_push($this->_named_routes, $lastElement);
     }
 
-    // public static function isValidRoute($url) {
-    //     $inArray = array_search(filter_var($url, FILTER_SANITIZE_URL), self::$getRoutesList);
-    //     if ($inArray !== false) {
-    //         return true;
-    //     } else {
-    //         return false;
-    //     }
-    // }
-
+    public function getArray() {
+        var_dump($this->current_route);
+    }
 }
