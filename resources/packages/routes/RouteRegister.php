@@ -1,6 +1,9 @@
 <?php
 namespace App\resources\packages\routes;
 
+/**
+ * Register each routes
+ */
 class RouteRegister extends Route {
 
     public function __construct() {}

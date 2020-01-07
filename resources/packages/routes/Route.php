@@ -3,30 +3,18 @@ namespace App\resources\packages\routes;
 
 use App\resources\packages\routes\RouteRegister;
 use App\resources\packages\routes\Router;
+use App\resources\packages\http\Request;
 
 class Route {
 
     private static $_instance;
+    public $_router;
     private $current_route;
-    protected $_get_routes = [];
-    protected $_post_routes = [];
-    protected $_put_routes = [];
-    protected $_patch_routes = [];
-    protected $_delete_routes = [];
-    protected $_named_routes = [];
     private $allowed_routes = [
         'get', 'post', 'put', 'patch', 'delete'
     ];
 
     public function __construct() {}
-
-    public static function __callStatic(String $name, Array $arguments) {
-        return self::selfInstance()->registerRoutes($name, $arguments);
-    }
-
-    public static function routeRun(Router $router) {
-        var_dump('hello');
-    }
 
     private static function selfInstance() {
         if ( ! isset(self::$_instance)) {
@@ -34,6 +22,26 @@ class Route {
         }
 
         return self::$_instance;
+    }
+
+    public static function __callStatic(String $name, Array $arguments) {
+        return self::selfInstance()->registerRoutes($name, $arguments);
+    }
+
+    public static function router() {
+        return self::selfInstance()->getRouter();
+    }
+
+    private function getRouter() {
+        return $this->routerInstance(new Router(new Request));
+    }
+
+    private function routerInstance(Router $router) {
+        if ( ! isset($this->_router)) {
+            $this->_router = $router;
+        }
+
+        return $this->_router;
     }
 
     private function registerRoutes(String $name, Array $arguments) {
@@ -85,13 +93,14 @@ class Route {
     }
 
     private function addToRouteList(String $name, Array $routeData) {
-        array_push($this->{'_' . $name . '_routes'}, $routeData);
+        array_push($this->getRouter()->{'_' . $name . '_routes'}, $routeData);
     }
 
     public function name($name) {
         $currentRoute = $this->current_route;
-        $lastElement = end($this->{'_' . $currentRoute . '_routes'});
+        $lastElement = end($this->getRouter()->{'_' . $currentRoute . '_routes'});
         $lastElement['name'] = $name;
-        array_push($this->_named_routes, $lastElement);
+        $this->getRouter()->_named_routes_associate[$name] = $lastElement;
+        array_push($this->getRouter()->_named_routes, $lastElement);
     }
 }
